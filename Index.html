@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>RunMate</title>
+  <meta name="description" content="Crea un piano per mezza maratona o maratona, correndo o camminando.">
+  <meta name="theme-color" content="#00897b">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="RunMate">
+
+  <style>
+    :root {
+      --primary: #00897b;
+      --primary-dark: #00695c;
+      --background: #f2f7f6;
+      --card: #ffffff;
+      --text: #102a27;
+      --muted: #607d8b;
+      --border: #cfd8dc;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: var(--background);
+      color: var(--text);
+      padding-bottom: 30px;
+    }
+
+    header {
+      background: linear-gradient(135deg, #00897b, #004d40);
+      color: #fff;
+      padding: 22px 16px 20px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 28px;
+      letter-spacing: .5px;
+    }
+
+    header p {
+      margin: 6px 0 0;
+      opacity: .9;
+      font-size: 14px;
+    }
+
+    main {
+      max-width: 560px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 18px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, .07);
+    }
+
+    h2 {
+      margin: 0 0 12px;
+      font-size: 22px;
+    }
+
+    h3 {
+      margin: 0 0 10px;
+      font-size: 18px;
+    }
+
+    label {
+      display: block;
+      margin: 14px 0 6px;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 13px;
+      font-size: 16px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #fff;
+      color: var(--text);
+    }
+
+    button {
+      width: 100%;
+      margin-top: 14px;
+      padding: 15px;
+      border: 0;
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      background: var(--primary);
+      cursor: pointer;
+      transition: transform .08s ease, opacity .2s ease;
+    }
+
+    button:active {
+      transform: scale(.98);
+    }
+
+    button.secondary {
+      background: #eceff1;
+      color: var(--primary-dark);
+    }
+
+    button.danger {
+      background: #b71c1c;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .big {
+      font-size: 44px;
+      font-weight: 800;
+      text-align: center;
+      margin: 8px 0;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .row {
+      display: flex;
+      gap: 12px;
+    }
+
+    .row > div {
+      flex: 1;
+    }
+
+    .workout {
+      background: #f1f8f6;
+      border-left: 5px solid var(--primary);
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+
+    .workout strong {
+      color: var(--primary-dark);
+    }
+
+    .small-button {
+      width: auto;
+      padding: 9px 14px;
+      font-size: 14px;
+      margin-top: 8px;
+      border-radius: 10px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 10px 6px;
+      border-radius: 12px;
+      background: #fff;
+      color: var(--primary-dark);
+      font-size: 14px;
+      font-weight: 700;
+      border: 1px solid var(--border);
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .tab.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    .gps-warning {
+      background: #fff3e0;
+      border-left: 5px solid #ef6c00;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+
+    .install-help {
+      background: #e3f2fd;
+      border-left: 5px solid #1976d2;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+
+    .footer-note {
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>RunMate</h1>
+    <p>Mezza maratona o maratona • Corsa o camminata</p>
+  </header>
+
+  <main>
+    <!-- ONBOARDING -->
+    <section id="screen-onboarding">
+      <div class="card">
+        <h2>Crea il tuo piano</h2>
+        <p class="muted">
+          Inserisci poche informazioni: RunMate creerà un piano progressivo in base al tempo che puoi dedicare agli allenamenti.
+        </p>
+
+        <label for="name">Nome</label>
+        <input id="name" type="text" placeholder="Il tuo nome" autocomplete="name">
+
+        <label for="age">Età</label>
+        <input id="age" type="number" min="10" max="100" placeholder="Es. 30">
+
+        <label for="activity">Come vuoi allenarti?</label>
+        <select id="activity">
+          <option value="run">Corro</option>
+          <option value="walk">Cammino</option>
+        </select>
+
+        <label for="goal">Obiettivo</label>
+        <select id="goal">
+          <option value="half">Mezza maratona</option>
+          <option value="full">Maratona</option>
+        </select>
+
+        <label for="months">Mesi disponibili per prepararti</label>
+        <input id="months" type="number" min="1" max="24" value="12">
+
+        <label for="days">Giorni disponibili a settimana</label>
+        <input id="days" type="number" min="2" max="6" value="3">
+
+        <label for="minutes">Minuti medi per allenamento</label>
+        <input id="minutes" type="number" min="15" max="240" value="45">
+
+        <label for="target">Tempo obiettivo in ore (opzionale)</label>
+        <input id="target" type="number" step="0.1" placeholder="Es. 2.30">
+
+        <button onclick="createPlan()">Genera il mio piano</button>
+      </div>
+
+      <div class="card">
+        <h3>Salva l’app sul telefono</h3>
+        <p class="muted">
+          <strong>iPhone:</strong> tocca <strong>Condividi</strong> e scegli <strong>Aggiungi a Home</strong>.<br>
+          <strong>Android:</strong> apri il menu del browser e scegli <strong>Aggiungi a schermata Home</strong> oppure <strong>Installa app</strong>.
+        </p>
+      </div>
+    </section>
+
+    <!-- HOME -->
+    <section id="screen-home" class="hidden">
+      <div class="tabs">
+        <div class="tab active" onclick="showHome()">Home</div>
+        <div class="tab" onclick="showPlan()">Piano</div>
+        <div class="tab" onclick="showHistory()">Storico</div>
+      </div>
+
+      <div class="card">
+        <h2 id="welcome"></h2>
+        <p id="goal-info" class="muted"></p>
+
+        <div class="big" id="total-km">0.0 km</div>
+        <p class="muted" style="text-align:center;">Chilometri totali registrati</p>
+
+        <div class="row" style="margin-top:14px;">
+          <div>
+            <div class="big" id="total-sessions" style="font-size:26px;">0</div>
+            <p class="muted" style="text-align:center;">Allenamenti</p>
+          </div>
+          <div>
+            <div class="big" id="total-time" style="font-size:26px;">0 min</div>
+            <p class="muted" style="text-align:center;">Tempo totale</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Allenamento</h3>
+        <p class="muted">
+          Avvia il GPS per registrare automaticamente distanza e percorso, oppure inserisci la distanza manualmente dopo l’allenamento.
+        </p>
+        <button onclick="showWorkout()">Inizia o registra</button>
+      </div>
+
+      <div class="card">
+        <h3>Invita un amico</h3>
+        <p class="muted">
+          Invia un messaggio WhatsApp per proporre una camminata o una corsa insieme.
+        </p>
+        <button class="secondary" onclick="inviteFriend()">Invita su WhatsApp</button>
+      </div>
+
+      <div class="card">
+        <h3>Il tuo piano</h3>
+        <p class="muted" id="next-workout"></p>
+        <button class="secondary" onclick="showPlan()">Vedi piano completo</button>
+      </div>
+    </section>
+
+    <!-- PIANO -->
+    <section id="screen-plan" class="hidden">
+      <div class="tabs">
+        <div class="tab" onclick="showHome()">Home</div>
+        <div class="tab active" onclick="showPlan()">Piano</div>
+        <div class="tab" onclick="showHistory()">Storico</div>
+      </div>
+
+      <div class="card">
+        <h2>Piano di allenamento</h2>
+        <div id="plan-list"></div>
+      </div>
+    </section>
+
+    <!-- ALLENAMENTO -->
+    <section id="screen-workout" class="hidden">
+      <div class="tabs">
+        <div class="tab" onclick="showHome()">Home</div>
+        <div class="tab" onclick="showPlan()">Piano</div>
+        <div class="tab" onclick="showHistory()">Storico</div>
+      </div>
+
+      <div class="card">
+        <h2>Registra allenamento</h2>
+
+        <div class="big" id="timer">00:00</div>
+        <p class="muted" style="text-align:center;" id="gps-distance">0.00 km</p>
+        <p class="muted" style="text-align:center;" id="gps-status">GPS non avviato</p>
+
+        <label for="manual-distance">Distanza effettiva (km)</label>
+        <input id="manual-distance" type="number" step="0.01" min="0" placeholder="Es. 5.20">
+
+        <label for="heart-rate">Battito medio (opzionale)</label>
+        <input id="heart-rate" type="number" min="40" max="250" placeholder="Es. 145">
+
+        <button id="start-stop" onclick="toggleWorkout()">Inizia</button>
+        <button class="secondary" onclick="showHome()">Torna alla Home</button>
+
+        <div class="gps-warning">
+          Il GPS funziona meglio all’aperto e con il browser aperto. Se non viene rilevata la posizione, inserisci la distanza manualmente.
+        </div>
+      </div>
+    </section>
+
+    <!-- STORICO -->
+    <section id="screen-history" class="hidden">
+      <div class="tabs">
+        <div class="tab" onclick="showHome()">Home</div>
+        <div class="tab" onclick="showPlan()">Piano</div>
+        <div class="tab active" onclick="showHistory()">Storico</div>
+      </div>
+
+      <div class="card">
+        <h2>Storico allenamenti</h2>
+        <div id="history-list"></div>
+      </div>
+    </section>
+
+    <p class="footer-note">
+      I tuoi dati sono salvati solo nel browser di questo telefono. Nessun account richiesto.
+    </p>
+  </main>
+
+<script>
+"use strict";
+
+const STORAGE_KEYS = {
+  profile: "runmate_profile",
+  plan: "runmate_plan",
+  sessions: "runmate_sessions"
+};
+
+let timer = null;
+let elapsedSeconds = 0;
+let isRunning = false;
+let gpsWatchId = null;
+let previousPosition = null;
+let gpsDistanceKm = 0;
+let routePoints = [];
+
+function save(key, value) {
+  localStorage.setItem(key, JSON.stringify(value));
+}
+
+function load(key, fallback) {
+  try {
+    const value = localStorage.getItem(key);
+    return value ? JSON.parse(value) : fallback;
+  } catch (error) {
+    return fallback;
+  }
+}
+
+function showScreen(screenId) {
+  ["screen-onboarding", "screen-home", "screen-plan", "screen-workout", "screen-history"]
+    .forEach(id => document.getElementById(id).classList.add("hidden"));
+
+  document.getElementById(screenId).classList.remove("hidden");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function createPlan() {
+  const name = document.getElementById("name").value.trim();
+  const age = parseInt(document.getElementById("age").value, 10);
+  const activity = document.getElementById("activity").value;
+  const goal = document.getElementById("goal").value;
+  const months = parseInt(document.getElementById("months").value, 10);
+  const days = parseInt(document.getElementById("days").value, 10);
+  const minutes = parseInt(document.getElementById("minutes").value, 10);
+  const target = parseFloat(document.getElementById("target").value) || null;
+
+  if (!name || !age || age < 10 || !months || months < 1 || !days || days < 2 || !minutes || minutes < 15) {
+    alert("Inserisci dati validi: serve almeno 1 mese, 2 uscite settimanali e 15 minuti per sessione.");
+    return;
+  }
+
+  const profile = {
+    name,
+    age,
+    activity,
+    goal,
+    months,
+    days,
+    minutes,
+    target
+  };
+
+  const plan = generatePlan(profile);
+
+  save(STORAGE_KEYS.profile, profile);
+  save(STORAGE_KEYS.plan, plan);
+
+  showHome();
+}
+
+function generatePlan(profile) {
+  const weeks = Math.max(profile.months * 4, 4);
+  const plan = [];
+  const today = new Date();
+  const startDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+  let weeklyMinutes = profile.minutes * profile.days * 0.75;
+
+  for (let week = 1; week <= weeks; week++) {
+    const isRecoveryWeek = week % 4 === 0;
+    const currentWeekMinutes = isRecoveryWeek ? weeklyMinutes * 0.7 : weeklyMinutes;
+
+    const easyMinutes = Math.round(currentWeekMinutes * 0.35);
+    const longMinutes = Math.round(currentWeekMinutes * 0.4);
+    const recoveryMinutes = Math.round(currentWeekMinutes * 0.25);
+
+    const weekStart = new Date(startDate);
+    weekStart.setDate(startDate.getDate() + (week - 1) * 7);
+
+    plan.push(createWorkout(
+      weekStart,
+      "Facile",
+      easyMinutes,
+      "Ritmo comodo: dovresti riuscire a parlare senza fiato."
+    ));
+
+    if (profile.days >= 3) {
+      const longDate = new Date(weekStart);
+      longDate.setDate(weekStart.getDate() + 2);
+
+      plan.push(createWorkout(
+        longDate,
+        "Lunga",
+        longMinutes,
+        "Sessione lunga: ritmo uniforme, senza forzare."
+      ));
+    }
+
+    if (profile.days >= 4) {
+      const recoveryDate = new Date(weekStart);
+      recoveryDate.setDate(weekStart.getDate() + 4);
+
+      plan.push(createWorkout(
+        recoveryDate,
+        "Recupero",
+        recoveryMinutes,
+        "Camminata facile oppure corsa molto lenta."
+      ));
+    }
+
+    if (profile.days >= 5) {
+      const extraDate = new Date(weekStart);
+      extraDate.setDate(weekStart.getDate() + 5);
+
+      plan.push(createWorkout(
+        extraDate,
+        "Facile",
+        Math.round(recoveryMinutes * 0.8),
+        "Sessione breve e molto facile."
+      ));
+    }
+
+    if (!isRecoveryWeek) {
+      weeklyMinutes *= 1.07;
+    }
+  }
+
+  return plan;
+}
+
+function createWorkout(date, type, minutes, notes) {
+  const profile = load(STORAGE_KEYS.profile, {});
+  const speedKmPerHour = profile.activity === "walk" ? 5 : 8;
+  const estimatedDistance = Number(((minutes / 60) * speedKmPerHour).toFixed(2));
+
+  return {
+    id: `${date.getTime()}-${type}`,
+    date: date.toISOString(),
+    type,
+    minutes,
+    estimatedDistance,
+    notes,
+    completed: false
+  };
+}
+
+function showHome() {
+  const profile = load(STORAGE_KEYS.profile, null);
+  const sessions = load(STORAGE_KEYS.sessions, []);
+
+  if (!profile) {
+    showScreen("screen-onboarding");
+    return;
+  }
+
+  document.getElementById("welcome").textContent = `Ciao, ${profile.name}`;
+
+  document.getElementById("goal-info").textContent =
+    profile.goal === "half"
+      ? "Obiettivo: mezza maratona"
+      : "Obiettivo: maratona";
+
+  const totalDistance = sessions.reduce((total, session) => {
+    return total + Number(session.distance || 0);
+  }, 0);
+
+  const totalMinutes = sessions.reduce((total, session) => {
+    return total + Math.round((session.seconds || 0) / 60);
+  }, 0);
+
+  document.getElementById("total-km").textContent = `${totalDistance.toFixed(1)} km`;
+  document.getElementById("total-sessions").textContent = sessions.length;
+  document.getElementById("total-time").textContent = `${totalMinutes} min`;
+
+  const nextWorkout = getNextWorkout();
+  const nextWorkoutElement = document.getElementById("next-workout");
+
+  if (nextWorkout) {
+    const date = new Date(nextWorkout.date).toLocaleDateString("it-IT", {
+      weekday: "long",
+      day: "numeric",
+      month: "long"
+    });
+
+    nextWorkoutElement.textContent =
+      `Prossimo allenamento: ${nextWorkout.type}, ${date} — ${nextWorkout.minutes} minuti.`;
+  } else {
+    nextWorkoutElement.textContent = "Non ci sono allenamenti pianificati.";
+  }
+
+  showScreen("screen-home");
+}
+
+function getNextWorkout() {
+  const plan = load(STORAGE_KEYS.plan, []);
+  const now = new Date();
+
+  return plan
+    .filter(workout => new Date(workout.date) >= now)
+    .sort((a, b) => new Date(a.date) - new Date(b.date))[0] || null;
+}
+
+function showPlan() {
+  const plan = load(STORAGE_KEYS.plan, []);
+  const container = document.getElementById("plan-list");
+
+  if (!plan.length) {
+    container.innerHTML = `<p class="muted">Nessun piano disponibile. Torna alla Home e creane uno.</p>`;
+    showScreen("screen-plan");
+    return;
+  }
+
+  container.innerHTML = plan.map((workout, index) => {
+    const date = new Date(workout.date).toLocaleDateString("it-IT", {
+      weekday: "short",
+      day: "numeric",
+      month: "short"
+    });
+
+    return `
+      <div class="workout">
+        <strong>${workout.type}</strong><br>
+        ${date} • ${workout.minutes} min • ${workout.estimatedDistance} km<br>
+        <span class="muted">${workout.notes}</span><br>
+        <button class="secondary small-button" onclick="inviteForWorkout(${index})">
+          Invita un amico
+        </button>
+      </div>
+    `;
+  }).join("");
+
+  showScreen("screen-plan");
+}
+
+function showHistory() {
+  const sessions = load(STORAGE_KEYS.sessions, []);
+  const container = document.getElementById("history-list");
+
+  if (!sessions.length) {
+    container.innerHTML = `<p class="muted">Nessun allenamento registrato.</p>`;
+    showScreen("screen-history");
+    return;
+  }
+
+  container.innerHTML = sessions.map(session => {
+    const date = new Date(session.date).toLocaleString("it-IT", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+
+    const pace = session.distance > 0
+      ? (session.seconds / 60 / session.distance).toFixed(1)
+      : "--";
+
+    return `
+      <div class="workout">
+        <strong>${date}</strong><br>
+        ${Number(session.distance || 0).toFixed(2)} km • ${formatTime(session.seconds || 0)}<br>
+        Ritmo: ${pace} min/km
+        ${session.heartRate ? `<br>Battito medio: ${session.heartRate} bpm` : ""}
+      </div>
+    `;
+  }).join("");
+
+  showScreen("screen-history");
+}
+
+function showWorkout() {
+  showScreen("screen-workout");
+}
+
+function toggleWorkout() {
+  const button = document.getElementById("start-stop");
+
+  if (!isRunning) {
+    startWorkout();
+    return;
+  }
+
+  stopWorkout();
+}
+
+function startWorkout() {
+  if (!("geolocation" in navigator)) {
+    alert("Il tuo browser non supporta il GPS. Puoi comunque inserire la distanza manualmente.");
+    return;
+  }
+
+  isRunning = true;
+  elapsedSeconds = 0;
+  gpsDistanceKm = 0;
+  previousPosition = null;
+  routePoints = [];
+
+  document.getElementById("start-stop").textContent = "Termina e salva";
+  document.getElementById("start-stop").classList.add("danger");
+  document.getElementById("gps-status").textContent = "Richiesta GPS in corso…";
+
+  timer = setInterval(() => {
+    elapsedSeconds++;
+    document.getElementById("timer").textContent = formatTime(elapsedSeconds);
+  }, 1000);
+
+  gpsWatchId = navigator.geolocation.watchPosition(
+    position => {
+      const latitude = position.coords.latitude;
+      const longitude = position.coords.longitude;
+      const accuracy = position.coords.accuracy;
+
+      routePoints.push({ latitude, longitude, timestamp: Date.now() });
+
+      if (previousPosition) {
+        const segmentKm = calculateDistanceKm(
+          previousPosition.latitude,
+          previousPosition.longitude,
+          latitude,
+          longitude
+        );
+
+        gpsDistanceKm += segmentKm;
+      }
+
+      previousPosition = { latitude, longitude };
+
+      document.getElementById("gps-distance").textContent =
+        `${gpsDistanceKm.toFixed(2)} km`;
+
+      document.getElementById("gps-status").textContent =
+        `GPS attivo • precisione circa ${Math.round(accuracy)} m`;
+    },
+    error => {
+      document.getElementById("gps-status").textC
